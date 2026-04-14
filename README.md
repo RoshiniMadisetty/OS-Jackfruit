@@ -1,78 +1,61 @@
 🚀 OS-Jackfruit: Multi-Container Runtime
-
-A lightweight Linux container runtime built in C, implementing:
-
-Process isolation via Linux namespaces
-A long-running supervisor daemon
-Real-time structured logging
-A kernel-space memory monitor via a custom Loadable Kernel Module (LKM)
 📌 Overview
 
-OS-Jackfruit is a stripped-down container runtime inspired by Docker — without layers, registries, or networking.
+This project implements a lightweight container runtime in C that demonstrates core operating system concepts like process isolation, namespace management, and kernel interaction.
 
-It focuses purely on core OS primitives:
+It provides a minimal alternative to Docker-like systems, focusing only on essential OS primitives without networking or image layers.
 
-Namespace isolation using clone()
+🚀 Features
+Namespace-based process isolation
 Filesystem isolation using chroot()
-Process lifecycle management via a supervisor daemon
-Structured logging using pipe + fork
-Kernel-level monitoring via /dev/container_monitor
-🏗️ Architecture
-engine (user-space)
- ├── CLI
- ├── Supervisor
- ├── Container Process (clone + namespaces)
- └── Log Manager (pipe + fork)
-          │
-          │ ioctl
-          ▼
-monitor.ko (kernel module)
- └── /dev/container_monitor
-     └── Tracks PID & memory usage
-⚙️ Features
-run → Launch interactive container (foreground)
-start → Run container in background with logging
-ps → List running containers
-stop → Gracefully terminate containers
-Filesystem isolation per container
+Supervisor daemon for container lifecycle management
 Real-time logging (stdout + file)
-Kernel module monitoring
-CI-safe build support
+Kernel module for memory monitoring
+Background and interactive container execution
+Multi-container support
+🏗️ Architecture
+
+Containers are created using Linux namespaces and managed by a user-space runtime.
+
+Client (CLI)
+   ↓
+Supervisor (engine)
+   ↓
+Container Process (namespaces + chroot)
+   ↓
+Log Manager (pipe + fork)
+   ↓
+Kernel Module (monitor.ko)
+   ↓
+/dev/container_monitor
 📁 Project Structure
-.
-├── boilerplate/
-│   ├── engine.c
-│   ├── monitor.c
-│   ├── monitor_ioctl.h
-│   ├── Makefile
-│   ├── cpu_hog.c
-│   ├── memory_hog.c
-│   ├── io_pulse.c
-│   └── environment-check.sh
-├── rootfs-alpha/
-├── rootfs-beta/
-└── README.md
+boilerplate/
+ ├── engine.c
+ ├── monitor.c
+ ├── monitor_ioctl.h
+ ├── Makefile
+ ├── cpu_hog.c
+ ├── memory_hog.c
+ ├── io_pulse.c
+ └── environment-check.sh
 
+rootfs-alpha/
+rootfs-beta/
+README.md
 🛠️ Setup & Installation
-
-✅ Requirements
-
+Requirements
 Ubuntu 22.04 / 24.04
 build-essential
 linux-headers
 Secure Boot OFF
-❌ WSL not supported
-
-1. Install Dependencies
+WSL not supported
+Installation
 sudo apt update
 sudo apt install -y build-essential linux-headers-$(uname -r)
-
-3. Run Environment Check
 cd boilerplate
 chmod +x environment-check.sh
 sudo ./environment-check.sh
-
-5. Prepare Root Filesystem
+Root Filesystem Setup
 mkdir rootfs-base
 
 wget https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/x86_64/alpine-minirootfs-3.20.3-x86_64.tar.gz
@@ -81,56 +64,49 @@ tar -xzf alpine-minirootfs-3.20.3-x86_64.tar.gz -C rootfs-base
 
 cp -a ./rootfs-base ./rootfs-alpha
 cp -a ./rootfs-base ./rootfs-beta
-
-⚠️ Do NOT commit rootfs directories
-
-4. Build
+Build
 cd boilerplate
 make
-make ci
 ▶️ Usage
-Run Interactive Container
+Run Container (Interactive)
 sudo ./engine run alpha ../rootfs-alpha
-Start Background Container
+Start Container (Background)
 sudo ./engine start alpha ../rootfs-alpha
 List Containers
 ./engine ps
-
-Example:
-
-NAME     PID     UPTIME
-alpha    13245   00:02:14
 Stop Container
 sudo ./engine stop alpha
 View Logs
 cat ../rootfs-alpha/logs/alpha.log
-
 🧠 Kernel Module
 Load / Unload
 sudo insmod monitor.ko
 sudo rmmod monitor
-Verify Device
+Check Device
 ls /dev/container_monitor
-Kernel Logs
+View Logs
 dmesg | tail -20
+🧪 Workloads
+cpu_hog → CPU intensive
+memory_hog → memory stress
+io_pulse → I/O workload
 
-🧪 Workload Experiments
-Workload	Behavior
-cpu_hog	CPU intensive
-memory_hog	Memory pressure
-io_pulse	I/O bursts
-Run
+Run using:
+
 ./cpu_hog
 ./memory_hog
 ./io_pulse
-
+⚠️ Limitations
+No network namespace
+No cgroups (resource limits)
+No container restart
+No layered filesystem
+Manual rootfs setup
 💡 Summary
 
 This project demonstrates:
 
 Linux namespaces
 Process isolation
-Kernel-user interaction
-Scheduling behavior
-
-A clean way to understand how containers work under the hood 🚀
+Kernel-user communication
+Basic container runtime design
