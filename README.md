@@ -1,34 +1,48 @@
-🔐 OS-Jackfruit: Multi-Container Runtime
-📌 Overview
+# 🔐 OS-Jackfruit: Multi-Container Runtime
 
-This project implements a lightweight container runtime in C that demonstrates core OS concepts like process isolation, namespace management, and kernel interaction.
+## 📌 Overview
 
-It focuses on essential primitives such as Linux namespaces, chroot-based filesystem isolation, and a supervisor daemon, without the complexity of full container platforms like Docker.
+This project implements a **lightweight container runtime in C** that demonstrates core OS concepts like **process isolation, namespace management, and kernel interaction**.
 
-🚀 Features
-Namespace-based process isolation
-Filesystem isolation using chroot()
-Supervisor daemon for container lifecycle management
-Real-time logging (stdout + file)
-Kernel module for memory monitoring
-Background and interactive container execution
-Multi-container support
-🏗️ Architecture
+It focuses on essential primitives such as **Linux namespaces, chroot-based filesystem isolation, and a supervisor daemon**, without the complexity of full container platforms like Docker.
+
+---
+
+## 🚀 Features
+
+* Namespace-based process isolation  
+* Filesystem isolation using `chroot()`  
+* Supervisor daemon for container lifecycle management  
+* Real-time logging (stdout + file)  
+* Kernel module for memory monitoring  
+* Background and interactive container execution  
+* Multi-container support  
+
+---
+
+## 🏗️ Architecture
 
 Containers are created and managed through a user-space runtime interacting with a kernel module.
 
+
 Client (CLI)
-   ↓
+↓
 Supervisor (engine)
-   ↓
+↓
 Container Process (namespaces + chroot)
-   ↓
+↓
 Log Manager (pipe + fork)
-   ↓
+↓
 Kernel Module (monitor.ko)
-   ↓
+↓
 /dev/container_monitor
-📁 Project Structure
+
+
+---
+
+## 📁 Project Structure
+
+
 boilerplate/
 ├── engine.c
 ├── monitor.c
@@ -42,14 +56,25 @@ boilerplate/
 rootfs-alpha/
 rootfs-beta/
 README.md
-🛠️ Setup & Installation
-Requirements
-Ubuntu 22.04 / 24.04
-build-essential
-linux-headers
-Secure Boot OFF
-WSL not supported
-Installation
+
+
+---
+
+## 🛠️ Setup & Installation
+
+### Requirements
+
+* Ubuntu 22.04 / 24.04  
+* build-essential  
+* linux-headers  
+* Secure Boot OFF  
+* WSL not supported  
+
+---
+
+### Installation
+
+```bash
 sudo apt update
 sudo apt install -y build-essential linux-headers-$(uname -r)
 cd boilerplate
@@ -67,6 +92,7 @@ cp -a ./rootfs-base ./rootfs-beta
 Build
 cd boilerplate
 make
+
 ▶️ Usage
 Run Container (Interactive)
 sudo ./engine run alpha ../rootfs-alpha
@@ -78,6 +104,7 @@ Stop Container
 sudo ./engine stop alpha
 View Logs
 cat ../rootfs-alpha/logs/alpha.log
+
 🧠 Kernel Module
 Load / Unload
 sudo insmod monitor.ko
@@ -86,6 +113,7 @@ Check Device
 ls /dev/container_monitor
 View Kernel Logs
 dmesg | tail -20
+
 🧪 Workloads
 cpu_hog → CPU intensive
 memory_hog → memory stress
@@ -93,12 +121,7 @@ io_pulse → I/O workload
 ./cpu_hog
 ./memory_hog
 ./io_pulse
-⚠️ Limitations
-No network namespace
-No cgroups (resource limits)
-No container restart
-No layered filesystem
-Manual rootfs setup
+
 💡 Summary
 
 This project demonstrates how containers work internally using:
