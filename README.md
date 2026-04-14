@@ -1,9 +1,9 @@
-🚀 OS-Jackfruit: Multi-Container Runtime
+🔐 OS-Jackfruit: Multi-Container Runtime
 📌 Overview
 
-This project implements a lightweight container runtime in C that demonstrates core operating system concepts like process isolation, namespace management, and kernel interaction.
+This project implements a lightweight container runtime in C that demonstrates core OS concepts like process isolation, namespace management, and kernel interaction.
 
-It provides a minimal alternative to Docker-like systems, focusing only on essential OS primitives without networking or image layers.
+It focuses on essential primitives such as Linux namespaces, chroot-based filesystem isolation, and a supervisor daemon, without the complexity of full container platforms like Docker.
 
 🚀 Features
 Namespace-based process isolation
@@ -15,7 +15,7 @@ Background and interactive container execution
 Multi-container support
 🏗️ Architecture
 
-Containers are created using Linux namespaces and managed by a user-space runtime.
+Containers are created and managed through a user-space runtime interacting with a kernel module.
 
 Client (CLI)
    ↓
@@ -30,14 +30,14 @@ Kernel Module (monitor.ko)
 /dev/container_monitor
 📁 Project Structure
 boilerplate/
- ├── engine.c
- ├── monitor.c
- ├── monitor_ioctl.h
- ├── Makefile
- ├── cpu_hog.c
- ├── memory_hog.c
- ├── io_pulse.c
- └── environment-check.sh
+├── engine.c
+├── monitor.c
+├── monitor_ioctl.h
+├── Makefile
+├── cpu_hog.c
+├── memory_hog.c
+├── io_pulse.c
+└── environment-check.sh
 
 rootfs-alpha/
 rootfs-beta/
@@ -84,15 +84,12 @@ sudo insmod monitor.ko
 sudo rmmod monitor
 Check Device
 ls /dev/container_monitor
-View Logs
+View Kernel Logs
 dmesg | tail -20
 🧪 Workloads
 cpu_hog → CPU intensive
 memory_hog → memory stress
 io_pulse → I/O workload
-
-Run using:
-
 ./cpu_hog
 ./memory_hog
 ./io_pulse
@@ -104,9 +101,9 @@ No layered filesystem
 Manual rootfs setup
 💡 Summary
 
-This project demonstrates:
+This project demonstrates how containers work internally using:
 
 Linux namespaces
 Process isolation
 Kernel-user communication
-Basic container runtime design
+Basic runtime design
